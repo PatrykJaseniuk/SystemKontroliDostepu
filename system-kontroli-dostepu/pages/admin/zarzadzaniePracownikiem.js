@@ -1,0 +1,1 @@
+// dane pracownika, jego sprzedaż i rejestracja wizyt, moze godziny pracy

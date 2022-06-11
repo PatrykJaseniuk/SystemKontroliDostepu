@@ -1,0 +1,1 @@
+// dane klienta jego historia subskrypcji, historia jego wizyt

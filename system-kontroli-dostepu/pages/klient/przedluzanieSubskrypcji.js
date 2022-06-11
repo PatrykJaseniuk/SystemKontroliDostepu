@@ -1,0 +1,1 @@
+// mozliwość przedłużenia subskrypcji online

@@ -1,0 +1,1 @@
+//edycja subskrypcji, może też ilość sprzedach 
