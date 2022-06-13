@@ -1,12 +1,17 @@
 //lista wizyt z możliwością sortownia i filtrowania 
 
+import Layout from "../../components/layouts/Layout";
+import Tabela from "../../components/Tabela";
+
 export default function Wizyty() {
-    return (
-        <div>
-        <h1>Wizyty</h1>
-        <p>
-        lista wizyt z możliwością sortownia i filtrowania
-        </p>
-        </div>
-    )
+  return (
+    <Layout>
+      <Tabela
+        apiURL={require('../api/klienci').URLgetAll()}
+        onDetailsClick={require('./zarzadzanieKlientem/[id]').linkGeneretor}
+        onNewClick={require('../api/klienci').URLgetAll()}
+      />
+
+    </Layout>
+  )
 }

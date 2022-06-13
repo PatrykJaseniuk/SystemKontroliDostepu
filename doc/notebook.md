@@ -32,6 +32,9 @@ Dane z servera w aplikacji uzyskuję dzięki bibliotece SWR. Żeby zainstalować
 ```
 npm install swr
 ```
+***
+# 3 Hello World dla wszystkich stron
+Zrobiono hello world dla każdej strony z przykładowymi danymi. Stworzono podstawowe komponenty.
 
 
 

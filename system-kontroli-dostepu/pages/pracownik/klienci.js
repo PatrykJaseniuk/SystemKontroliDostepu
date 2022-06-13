@@ -4,19 +4,22 @@
 import Link from 'next/link'
 import ZarzadzanieKlientem from './zarzadzanieKlientem/[id]'
 import Tabela from '../../components/Tabela'
+import Layout from '../../components/layouts/Layout'
 // import{linkGenerator} from 'pracownik/zarzadzanieKlientem/[id].js'
 
 export default function Klienci() {
-    return (
-        <div>
+    return(
+
+        <Layout>
             <h1>Klienci</h1>
 
             <Tabela
                 apiURL={require('../api/klienci').URLgetAll()}
-                onDetailsClick={require('./zarzadzanieKlientem/[id]').linkGenerator}
-            // onNewClick={}
+                onDetailsClick={require('./zarzadzanieKlientem/[id]').linkGeneretor}
+                onNewClick={require('../api/klienci').URLgetAll()}
             />
-        </div>
+        </Layout>
     )
+
 }
 
