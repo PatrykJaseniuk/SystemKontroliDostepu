@@ -9,19 +9,20 @@ import styles from '../styles/Home.module.css'
 export default function Tabela({ getData, onDetailsClick, onNewClick }) {
 
     // const fetcher = (url) => fetch(url).then(r => r.json()).then(data => {// tutaj mozna modyfikowac uzyskane dane przd wyswietlaniem
-        // data.columns.push('Szczegóły') // add column with link to details.
-        // return data;
+    // data.columns.push('Szczegóły') // add column with link to details.
+    // return data;
     // })
-    var [query, setQuery] = React.useState({});
-    const queryBuilder = (x) => { setQuery({...query,...x,}) }
+    var [filterQuery, setFilterQuery] = React.useState({});
+    var [sortQuery, setSortQuery] = React.useState({});
+    const filterQueryBuilder = (x) => { setFilterQuery({ ...filterQuery, ...x, }) }
     // const { data, error,mutate } = useSWR(apiURLGenerator(query), fetcher);
     var [data, setData] = React.useState(null);
     var [error, setError] = React.useState(null);
     useEffect(() => {
-        getData(query)
-        .then(data =>{setData(data); console.log(data)})
-        .catch(error => setError(error))
-    }, [query])
+        getData({ filter: filterQuery, sort: sortQuery })
+            .then(data => { setData(data); console.log(data) })
+            .catch(error => setError(error))
+    }, [filterQuery, sortQuery])
 
 
     if (error) return <div>Failed to load</div>
@@ -33,7 +34,9 @@ export default function Tabela({ getData, onDetailsClick, onNewClick }) {
                 <table className="table table-striped">
                     <Thead
                         columns={data.columns}
-                        queryBuilder={queryBuilder}
+                        filterQueryBuilder={filterQueryBuilder}
+                        setSortQuery={setSortQuery}
+                        sortQuery={sortQuery}
                     />
                     <Tbody
                         rows={data.rows}
@@ -45,18 +48,33 @@ export default function Tabela({ getData, onDetailsClick, onNewClick }) {
     )
 }
 
-function Thead({ columns, queryBuilder }) {
+function Thead({ columns, filterQueryBuilder, setSortQuery, sortQuery }) {
     return (
         <thead>
-            {/* filters */}
+            {/* filters and sorting */}
             <tr>
                 {columns.map((column, index) => (
                     <th key={index}>
                         <input
                             type={column.type}
                             onKeyUp={(e) => {
-                                queryBuilder({ [column.name]: e.target.value })
+                                filterQueryBuilder({ [column.name]: e.target.value })
                             }}
+                        />
+                        {/* button bootstrap */}
+                        <SortButton
+                            onClick={
+                                (direction) => {
+                                    setSortQuery({ column: [column.name], direction: direction })
+                                }
+                            }
+                            direction={
+                                (() => {
+                                    if (sortQuery.column == (column.name)) {
+                                        return sortQuery.direction
+                                    }
+                                })()
+                            }
                         />
                     </th>
                 ))}
@@ -68,6 +86,38 @@ function Thead({ columns, queryBuilder }) {
                 ))}
             </tr>
         </thead>
+    )
+}
+
+function SortButton({ onClick, direction }) {
+    if (direction == undefined) {
+        direction = 'none'
+    }
+
+    let nextDirection;
+    if (direction === 'asc') {
+        nextDirection = 'desc'
+    }
+    else if (direction === 'desc') {
+        nextDirection = 'none'
+    }
+    else {
+        nextDirection = 'asc'
+    }
+
+    const ico = {
+        'asc': <i className="fas fa-sort-alpha-down"></i>,
+        'desc': <i className="fas fa-sort-alpha-up"></i>,
+        'none': <i className="fas fa-sort"></i>
+    }
+    return (
+        <button className="btn btn-primary" onClick={
+            () => {
+                onClick(nextDirection)
+            }
+        }>
+            {ico[direction]}
+        </button>
     )
 }
 
