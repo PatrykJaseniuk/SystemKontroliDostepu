@@ -14,9 +14,8 @@ export default function Klienci() {
             <h1>Klienci</h1>
 
             <Tabela
-                apiURL={require('../api/klienci').URLgetAll()}
+                getData={require('../api/klienci').getData}
                 onDetailsClick={require('./zarzadzanieKlientem/[id]').linkGeneretor}
-                onNewClick={require('../api/klienci').URLgetAll()}
             />
         </Layout>
     )

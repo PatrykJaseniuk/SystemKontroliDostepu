@@ -33,8 +33,22 @@ Dane z servera w aplikacji uzyskuję dzięki bibliotece SWR. Żeby zainstalować
 npm install swr
 ```
 ***
-# 3 Hello World dla wszystkich stron
+## 3 Hello World dla wszystkich stron
 Zrobiono hello world dla każdej strony z przykładowymi danymi. Stworzono podstawowe komponenty.
+
+***
+## Komponenty i Api
+### to do :
+4) Sprecyzować komponenty
+5) Stworzyć API dla aplikacji, na razie dane na serverze będą statyczne
+6) Znaleźć jakiś sposób na przechowywanie danych. (może MongoDB)
+
+***
+## 4 Komponent Tabela, 5 API klienci
+* Dodałem możliwość filtrowania danych w tabeli.
+* Rozbudowałem api o możliwość filtrowania danych.
+
+
 
 
 
