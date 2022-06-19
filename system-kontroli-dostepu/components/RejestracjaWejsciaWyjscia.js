@@ -1,12 +1,12 @@
 import Tabela from './Tabela';
+import { getData,getKlient } from '../pages/api/klienci';
+import { useState } from 'react';
 
 
 export default function RejestracjaWejsciaWyjscia() {
 
 
-
-
-
+    var [selectedKlientId, setSelectedKlientId] = useState(null);
 
 
     return (
@@ -15,13 +15,28 @@ export default function RejestracjaWejsciaWyjscia() {
                 <div class="card-body ">
                     <h1>Rejestracja wejścia i wyjścia</h1>
                     <Tabela
-                    api={api}
-                    onRowClick={()=>{}}
+                        getData={getData}
+                        onRowClick={(idKlienta) => { setSelectedKlientId(idKlienta) }}
                     />
 
-                    <PrzyciskiWpuszczaniaWypuszczaniaKlienta/>
+                    <PrzyciskiWpuszczaniaWypuszczaniaKlienta
+                        klient = {selectedKlientId}
+                    />
                 </div>
             </div>
+        </div>
+    )
+}
+
+function PrzyciskiWpuszczaniaWypuszczaniaKlienta() {
+    return (
+        <div class="card bg-secondary mb-3">
+            <button type="button" class="btn btn-primary">
+                Wpuszczaj klienta
+            </button>
+            <button type="button" class="btn btn-primary">
+                Wypuszczaj klienta
+            </button>
         </div>
     )
 }

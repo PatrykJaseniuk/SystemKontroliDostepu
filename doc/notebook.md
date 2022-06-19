@@ -83,7 +83,16 @@ postData('https://example.com/answer', { answer: 42 })
 ```
 
 ### done :
-Dodałem sortowanie tabeli do komponentu i api.
+Dodałem sortowanie tabeli do komponentu i API
+
+## 5 API ,6 Baza danych
+Baza danych będzie chyba najprostsza z możliwych tz będzie zwykłym obiektem i będę ten obiekt serializował przy użyciu specjalnej biblioteki do serializacji obiektów z zapętlonymi referencjami (jak to mam miejsce w bazie danych). 
+
+Z powody zmian w bazie zmieniłem też trochę api.
+
+### to do:
+6.2) Rozbudować bazę danych o metody dodawania, brania rekordu po id i ogarnąć relacje.
+5.2) Rozbudować api o obsługę dodatkowych funkcjonalności bazy danych.
 
 
 

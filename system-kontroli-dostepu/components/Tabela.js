@@ -126,9 +126,17 @@ function Tbody({ rows, onDetailsClick }) {
         <tbody>
             {rows.map((row, index) => (
                 <tr key={index}>
-                    {row.cells.map((cell, index) => (
+                    {
+                        // fore each object cells key print its value
+                        Object.entries(row.cells).map(([nazwaPola, value]) => (
+                            <td key={nazwaPola}>{value}</td>
+                        ))
+
+
+                    }
+                    {/* {row.cells.map((cell, index) => (
                         <td key={index}>{cell}</td>
-                    ))}
+                    ))} */}
                     {(() => {
                         if (onDetailsClick) {
                             return <td><Link href={onDetailsClick(row.id)}><a>Szczegóły</a></Link></td>
