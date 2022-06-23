@@ -17,15 +17,15 @@ export default function ZarzadzanieKlientem() {
             <DaneKlienta/>
             <h2>subskrypcje </h2>
             <Tabela
-                apiURL={require('../../api/klienci').URLgetAll()}
+                apiURL={require('../../api/read/[nazwaTabeli]').URLgetAll()}
                 onDetailsClick={linkGeneretor}
-                onNewClick={require('../../api/klienci').URLgetAll()}
+                onNewClick={require('../../api/read/[nazwaTabeli]').URLgetAll()}
             />
             <h2>Wizyty</h2>
             <Tabela
-                apiURL={require('../../api/klienci').URLgetAll()}
+                apiURL={require('../../api/read/[nazwaTabeli]').URLgetAll()}
                 onDetailsClick={linkGeneretor}
-                onNewClick={require('../../api/klienci').URLgetAll()}
+                onNewClick={require('../../api/read/[nazwaTabeli]').URLgetAll()}
             />
 
         </Layout>

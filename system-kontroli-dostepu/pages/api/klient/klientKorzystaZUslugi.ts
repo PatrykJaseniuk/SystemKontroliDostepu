@@ -1,18 +1,33 @@
-import { getDomainLocale } from "next/dist/shared/lib/router/router"
-import dataBase from '../../database/db'
-
-const URL = '/api/klienci';
+import { dataBase } from '../../../database/db'
 
 
-var klienci = dataBase.klienci
-
-export default function handler(req, res) {
-
-    let filteredAndSorted = klienci.getFilteredAndSorted(req.body)
-    res.status(200).json(filteredAndSorted);
+interface Argument {
+    idKlienta: number
+    idUslugi: number
 }
 
-export async function getData(query = {}) {
+interface Result {
+    czyKozystaZUslugi: boolean
+}
+
+const URL = '/api/klient/czyKozystaZUslugi';
+
+
+var klienci = dataBase.tabele.klienci;
+
+export default function handler(req, res) {
+    console.log('query: ', req.query);
+    console.log('body: ', req.body);
+
+    let argument: Argument = req.body as Argument;
+    var klient = klienci.getById(argument.idKlienta)
+
+    let result: Result = { czyKozystaZUslugi: true };
+
+    res.status(200).json(result);
+}
+
+export async function klientKorzystaZUslugi(argument: Argument): Promise<Result> {
     // Default options are marked with *
     const response = await fetch(URL, {
         method: 'POST', // *GET, POST, PUT, DELETE, etc.
@@ -25,7 +40,8 @@ export async function getData(query = {}) {
         },
         redirect: 'follow', // manual, *follow, error
         referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-        body: JSON.stringify(query) // body data type must match "Content-Type" header
+        body: JSON.stringify(argument) // body data type must match "Content-Type" header
     });
     return response.json(); // parses JSON response into native JavaScript objects
 }
+

@@ -1,0 +1,115 @@
+import Tabela from './Tabela';
+import { getKlienci } from '../pages/api/read/[nazwaTabeli]';
+import { getUslugiKlienta } from '../pages/api/klient/uslugiKlienta';
+import { getCzyKozystaZUslugi } from '../pages/api/klient/czyKozystaZUslugi';
+import { klientKorzystaZUslugi } from '../pages/api/klient/klientKorzystaZUslugi';
+import { useState, useEffect } from 'react';
+// import { getDostepneUslugi } from '../pages/api/read/[nazwaTabeli]';
+
+
+export default function RejestracjaWejsciaWyjscia() {
+    var [selectedKlientId, setSelectedKlientId] = useState(null);
+    console.log('wybrano klienta', selectedKlientId);
+    return (
+        <div>
+            <div className="card bg-primary mb-3">
+                <div className="card-body ">
+                    <h1>Rejestracja wejścia i wyjścia</h1>
+                    {(() => {
+                        if (selectedKlientId) {
+                            return (
+                                <PrzyciskiWpuszczaniaWypuszczaniaKlienta
+                                    klientId={selectedKlientId}
+                                    onCancelClick={() => { setSelectedKlientId(null) }}
+                                />
+                            )
+                        }
+                        else {
+                            return (
+                                <Tabela
+                                    getFileteredAndSorted={getKlienci}
+                                    onRowClick={(idKlienta) => { setSelectedKlientId(idKlienta); }}
+                                    onDetailsClick={undefined}
+                                    onNewClick={undefined}
+                                />
+                            )
+                        }
+                    })()}
+                </div>
+            </div>
+        </div>
+    )
+}
+
+function PrzyciskiWpuszczaniaWypuszczaniaKlienta({ klientId, onCancelClick }) {
+
+    var [dostepneUslugi, setDostepneUslugi] = useState(null);
+    var [czyKozystaZUslugi, setCzyKozystaZUslugi] = useState(null);
+    var [info, setInfo] = useState(null);
+
+    useEffect(() => {
+        getUslugiKlienta({ idKlienta: klientId })
+            .then(data => { setDostepneUslugi(data.uslugiKlienta); console.log('getUslugiKlienta: ', data) }).
+            catch(error => { console.log('getUslugiKlienta: ', error) });
+
+        getCzyKozystaZUslugi(klientId)
+            .then(data => { setCzyKozystaZUslugi(data.czyKozystaZUslugi); console.log('getCzyKozystaZUslugi: ', data.czyKozystaZUslugi) });
+    }, [])
+
+
+
+    return (
+        <div className="card bg-secondary mb-3">
+            {(() => {
+                if (info) {
+                    return (
+                        <div className="card-body">
+                            <h1>{info}</h1>
+                            <button className="btn btn-primary" onClick={onCancelClick}>Zamknij</button>
+                        </div>
+                    )
+                }
+                else if (czyKozystaZUslugi == null || dostepneUslugi == null) {
+                    return <p>Loading... </p>
+                }
+                else if (czyKozystaZUslugi == true) {
+                    return (
+                        <button
+                            type="button"
+                            className="btn btn-primary"
+                        // onClick={() => { wypuscKlienta(klientId) }}
+                        >
+                            wypusc klienta
+                        </button>
+                    )
+                }
+
+                // else {
+                //     return dostepneUslugi.map((usluga, index) => (
+                //         <button
+                //             type="button"
+                //             className="btn btn-primary"
+                //             onClick={() => {
+                //                 klientKorzystaZUslugi({ idKlienta: klientId, idUslugi: usluga.id })
+                //                     .then((data) => {
+                //                         console.log('klientKorzystaZUslugi: ', data);
+                //                         setInfo(data)
+                //                     }
+                //                     )
+                //             }}
+                //         >
+                //             wpusc Klienta do {usluga.nazwa}
+                //         </button>
+                //     ))
+                // }
+            })()}
+            <button
+                type="button"
+                className="btn btn-primary"
+                onClick={onCancelClick}
+            >
+                anuluj
+            </button>
+        </div>
+    )
+}

@@ -3,7 +3,7 @@
 // 2 wybranie usługi z której klient chce skorzystać, oczywiście jeżeli ma dostęp do niej. Tutaj powinno być przejście do `zarzadzenieKlientem` gdyby trzeba było np przedłużyć subskrypcję
 
 import Layout from "../../components/layouts/Layout";
-import RejestracjaWejsciaWyjscia from "../../components/RejestracjaWejsciaWyjscia";
+import RejestracjaWejsciaWyjscia from "../../components/RejestracjaWejsciaWyjscia.tsx";
 import KlienciWUslugach from "../../components/klienciWUslugach";
 
 
@@ -14,8 +14,9 @@ import KlienciWUslugach from "../../components/klienciWUslugach";
 export default function ObslugaWejscia() {
     return (
         <Layout>
-            <RejestracjaWejsciaWyjscia/>
-            <KlienciWUslugach/>
+            <RejestracjaWejsciaWyjscia />
+            <KlienciWUslugach />
         </Layout>
     )
 }
+

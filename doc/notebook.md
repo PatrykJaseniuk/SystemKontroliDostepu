@@ -95,8 +95,16 @@ Z powody zmian w bazie zmieniłem też trochę api.
 6.2) Rozbudować bazę danych o metody dodawania, brania rekordu po id i ogarnąć relacje.
 5.2) Rozbudować api o obsługę dodatkowych funkcjonalności bazy danych.
 
+Przydał by się jakiś sposób żeby zdefiniować obiekt który jest argumentem dla api, 
+żeby IDE podpowiadało mi jaką ma strukturę. Pora na TypeScript.
+***
 
+## 6 Rozbudowa Bazy, 5 Rozbudowa Api, TypeScript
 
+Najważniejsze to przejscie z JS so TS. Znacznie ułatwiło poruszanie się po złożonych obiektach jak baza danych z relacjami, albo obiektach, które są argumentami dla fukcji.
+
+### to do:
+Definiować strony i komponenty, tworzyć dla nich api i bazę danych.
 
 
 
