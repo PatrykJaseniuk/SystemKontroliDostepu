@@ -3,8 +3,9 @@
 // 2 wybranie usługi z której klient chce skorzystać, oczywiście jeżeli ma dostęp do niej. Tutaj powinno być przejście do `zarzadzenieKlientem` gdyby trzeba było np przedłużyć subskrypcję
 
 import Layout from "../../components/layouts/Layout";
-import RejestracjaWejsciaWyjscia from "../../components/RejestracjaWejsciaWyjscia.tsx";
+import RejestracjaWejsciaWyjscia from "../../components/RejestracjaWejsciaWyjscia";
 import KlienciWUslugach from "../../components/klienciWUslugach";
+import { useState } from "react";
 
 
 // Lista klientów korzystających z usług, czyli dla każdej usługi tabela a w niej osoby aktualnie z niej korzystające.
@@ -12,10 +13,13 @@ import KlienciWUslugach from "../../components/klienciWUslugach";
 // Wypuszczanie klienta z usługi np podając id klienta, albo klikając go w tabeli z klientami korzystającymi z danej usługi.
 
 export default function ObslugaWejscia() {
+    var [odswierzanie, setOdswierzanie] = useState(false);
     return (
         <Layout>
-            <RejestracjaWejsciaWyjscia />
-            <KlienciWUslugach />
+            <RejestracjaWejsciaWyjscia
+                onChange={() => setOdswierzanie(!odswierzanie)}
+            />
+            <KlienciWUslugach odswierzanie={odswierzanie} />
         </Layout>
     )
 }

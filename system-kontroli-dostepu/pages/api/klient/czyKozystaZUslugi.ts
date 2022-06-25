@@ -1,5 +1,5 @@
 
-import { dataBase } from '../../../database/db'
+import dataBase from '../../../database/db'
 
 
 interface Argument {
@@ -16,15 +16,22 @@ const URL = '/api/klient/czyKozystaZUslugi';
 var klienci = dataBase.tabele.klienci;
 
 export default function handler(req, res) {
+    console.log('---------------czy klient kozysta z uslugi---->');
     console.log('query: ', req.query);
     console.log('body: ', req.body);
 
     let argument: Argument = req.body;
     var klient = klienci.getById(argument.idKlienta)
+    let czyKozystaZUslugi: boolean = false;
+    klient.powiazaneEncje.subskrypcje.forEach(subskrypcja => {
+        czyKozystaZUslugi = czyKozystaZUslugi || subskrypcja.komorki.czyJestUzywana;
+    })
 
-    let result: Result = { czyKozystaZUslugi: true };
+    let result: Result = { czyKozystaZUslugi: czyKozystaZUslugi };
 
     res.status(200).json(result);
+    console.log('result: ', result);
+    console.log('<----czy klient kozysta z uslugi--------------------');
 }
 
 export async function getCzyKozystaZUslugi(argument: Argument): Promise<Result> {

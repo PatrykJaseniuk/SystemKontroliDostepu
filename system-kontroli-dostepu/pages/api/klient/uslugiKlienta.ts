@@ -1,4 +1,4 @@
-import { dataBase } from '../../../database/db'
+import  dataBase  from '../../../database/db'
 
 interface Argument {
     idKlienta: number
@@ -22,7 +22,7 @@ var klienci = dataBase.tabele.klienci
 
 
 export default function handler(req, res) {
-    console.log('uslugi Klienta');
+    console.log('---------------uslugi klienta---->');
     console.log('query: ', req.query);
     console.log('body: ', req.body);
     console.log('id: ', req.body.idKlienta);
@@ -33,11 +33,11 @@ export default function handler(req, res) {
     console.log('klient: ', klient);
 
     let uslugiKlienta = klient.powiazaneEncje.subskrypcje.map(subskrypcja => {
-        let usluga: Usluga = { id: subskrypcja.id, nazwa: subskrypcja.powiazaneEncje.typSubskrypcji.komorki.upowaznienie }
+        let usluga: Usluga = { id: subskrypcja.id, nazwa: subskrypcja.powiazaneEncje.typSubskrypcji.powiazaneEncje.usluga.komorki.nazwa }
         return usluga;
     }
     )
-    let uslugi: Result = {
+    let result: Result = {
         uslugiKlienta: uslugiKlienta
     }
     // = klient.powiazaneEncje.subskrypcje.map(subskrypcja => {
@@ -49,7 +49,10 @@ export default function handler(req, res) {
     //     return uslugaKlienta
     // }
     // )
-    res.status(200).json(uslugi);
+    
+    res.status(200).json(result);
+    console.log('result: ', result);
+    console.log('<----uslugi klienta---------------');
 }
 
 export async function getUslugiKlienta(argument: Argument): Promise<Result> {

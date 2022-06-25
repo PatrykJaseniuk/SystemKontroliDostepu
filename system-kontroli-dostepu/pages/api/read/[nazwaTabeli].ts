@@ -1,4 +1,5 @@
-import { dataBase, query, Tabela } from '../../../database/db'
+import { query, Tabela } from '../../../database/db'
+import dataBase from '../../../database/db';
 
 const URL = '/api/read';
 const URLKlienci = '/klienci';

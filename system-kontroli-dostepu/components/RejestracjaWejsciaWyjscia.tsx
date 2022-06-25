@@ -4,11 +4,15 @@ import { getUslugiKlienta } from '../pages/api/klient/uslugiKlienta';
 import { getCzyKozystaZUslugi } from '../pages/api/klient/czyKozystaZUslugi';
 import { klientKorzystaZUslugi } from '../pages/api/klient/klientKorzystaZUslugi';
 import { useState, useEffect } from 'react';
+import { wypuscKlienta } from '../pages/api/klient/wypuscKlienta';
 // import { getDostepneUslugi } from '../pages/api/read/[nazwaTabeli]';
 
 
-export default function RejestracjaWejsciaWyjscia() {
+export default function RejestracjaWejsciaWyjscia({ onChange }) {
     var [selectedKlientId, setSelectedKlientId] = useState(null);
+    useEffect(() => {
+        onChange();
+    }, [selectedKlientId])
     console.log('wybrano klienta', selectedKlientId);
     return (
         <div>
@@ -52,7 +56,7 @@ function PrzyciskiWpuszczaniaWypuszczaniaKlienta({ klientId, onCancelClick }) {
             .then(data => { setDostepneUslugi(data.uslugiKlienta); console.log('getUslugiKlienta: ', data) }).
             catch(error => { console.log('getUslugiKlienta: ', error) });
 
-        getCzyKozystaZUslugi(klientId)
+        getCzyKozystaZUslugi({ idKlienta: klientId })
             .then(data => { setCzyKozystaZUslugi(data.czyKozystaZUslugi); console.log('getCzyKozystaZUslugi: ', data.czyKozystaZUslugi) });
     }, [])
 
@@ -64,7 +68,7 @@ function PrzyciskiWpuszczaniaWypuszczaniaKlienta({ klientId, onCancelClick }) {
                 if (info) {
                     return (
                         <div className="card-body">
-                            <h1>{info}</h1>
+                            <h1>{info ? 'OK' : 'odrzucono!'}</h1>
                             <button className="btn btn-primary" onClick={onCancelClick}>Zamknij</button>
                         </div>
                     )
@@ -77,31 +81,35 @@ function PrzyciskiWpuszczaniaWypuszczaniaKlienta({ klientId, onCancelClick }) {
                         <button
                             type="button"
                             className="btn btn-primary"
-                        // onClick={() => { wypuscKlienta(klientId) }}
+                            onClick={() => {
+                                wypuscKlienta({ idKlienta: klientId })
+                                    .then((info) => { setInfo(info) })
+                                    .catch(error => { console.log('wypuscKlienta: ', error) }
+                                    )
+                            }}
                         >
                             wypusc klienta
                         </button>
                     )
                 }
-
-                // else {
-                //     return dostepneUslugi.map((usluga, index) => (
-                //         <button
-                //             type="button"
-                //             className="btn btn-primary"
-                //             onClick={() => {
-                //                 klientKorzystaZUslugi({ idKlienta: klientId, idUslugi: usluga.id })
-                //                     .then((data) => {
-                //                         console.log('klientKorzystaZUslugi: ', data);
-                //                         setInfo(data)
-                //                     }
-                //                     )
-                //             }}
-                //         >
-                //             wpusc Klienta do {usluga.nazwa}
-                //         </button>
-                //     ))
-                // }
+                else {
+                    return dostepneUslugi.map((usluga, index) => (
+                        <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={() => {
+                                klientKorzystaZUslugi({ idKlienta: klientId, idUslugi: usluga.id })
+                                    .then((data) => {
+                                        console.log('klientKorzystaZUslugi: ', data);
+                                        setInfo(data)
+                                    }
+                                    )
+                            }}
+                        >
+                            wpusc Klienta do {usluga.nazwa}
+                        </button>
+                    ))
+                }
             })()}
             <button
                 type="button"

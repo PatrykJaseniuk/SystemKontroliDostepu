@@ -81,7 +81,7 @@ class BazowaTabela implements Tabela {
     }
 }
 
-type TypPola = | 'boolean' | 'date' | 'array' | 'object';
+type TypPola = 'text' | 'boolean' | 'date' | 'array' | 'object';
 
 
 export class Klient implements Encja {
@@ -106,7 +106,7 @@ export class Klient implements Encja {
 
 class Klienci extends BazowaTabela {
     columns = [
-        { nazwaKolumny: 'imie', typ: 'text' as TypPola },
+        { nazwaKolumny: 'imie', typ: 'text' as TypPola, },
         { nazwaKolumny: 'nazwisko', typ: 'text' as TypPola },
     ];
     rows: Klient[] = [];// = [] inicjalizuje tablice
@@ -130,6 +130,7 @@ class Subskrypcja implements Encja {
         bazowaIloscWizyt: number;
         iloscWykozystanychWizyt: number;
         cena: number;
+        czyJestUzywana: boolean;
     }
     powiazaneEncje: {
         klient: Klient;
@@ -142,7 +143,8 @@ class Subskrypcja implements Encja {
             dataKOncaWaznosci: dataKOncaWaznosci,
             bazowaIloscWizyt: bazowaIloscWizyt,
             iloscWykozystanychWizyt: iloscWykozystanychWizyt,
-            cena: cena
+            cena: cena,
+            czyJestUzywana: false
         }
         this.powiazaneEncje = {
             klient: klient,
@@ -166,6 +168,9 @@ class Subskrypcje extends BazowaTabela {
     ];
     rows: Subskrypcja[] = [];
 
+    getById(id: number): Subskrypcja {
+        return this.rows.find(row => row.id == id);
+    }
     // constructor() {
     //     super();
     //     this.add(new Subskrypcja(new Date(2020, 1, 1), new Date(2020, 1, 1), 10, 0, 100, klient, typSubskrypcji));
@@ -173,31 +178,60 @@ class Subskrypcje extends BazowaTabela {
     // }
 }
 
+class Usluga implements Encja {
+    id: number;
+    powiazaneEncje: {
+        typySubskrypcji: TypSubskrypcji[];
+    };
+    komorki: {
+        nazwa: string;
+    };
+    constructor(nazwa: string) {
+        this.komorki = {
+            nazwa: nazwa
+        }
+        this.powiazaneEncje = {
+            typySubskrypcji: []
+        }
+    }
+}
 
+class Uslugi extends BazowaTabela {
+    columns = [
+        { nazwaKolumny: 'nazwa', typ: 'text' as TypPola },
+    ];
+    rows: Usluga[] = [];
+
+    getById(id: number): Usluga {
+        return this.rows.find(row => row.id == id);
+    }
+}
 
 class TypSubskrypcji implements Encja {
     id: number;
     komorki: {
         nazwa: string;
         cena: number;
-        upowaznienie: string;
         OkresWaznosci: number;
         IloscWejsci: number;
     }
     powiazaneEncje: {
         subskrypcje: Subskrypcja[];
+        usluga: Usluga;
     }
-    constructor(nazwa: string, cena: number, upowaznienie: string, okresWaznosci: number, iloscWejsci: number) {
+    constructor(nazwa: string, cena: number, upowaznienie: Usluga, okresWaznosci: number, iloscWejsci: number) {
         this.komorki = {
             nazwa: nazwa,
             cena: cena,
-            upowaznienie: upowaznienie,
             OkresWaznosci: okresWaznosci,
             IloscWejsci: iloscWejsci
         }
         this.powiazaneEncje = {
-            subskrypcje: [] //trzeba zainicjalizowac tablice
+            subskrypcje: [], //trzeba zainicjalizowac tablice
+            usluga: upowaznienie
         }
+
+        upowaznienie.powiazaneEncje.typySubskrypcji.push(this);
     }
 }
 
@@ -224,6 +258,7 @@ class DataBase {
         klienci: Klienci;
         typySubskrypcji: TypySubskrypcji
         subskrypcje: Subskrypcje
+        upowaznienia: Uslugi
     }
     getTabele(tableName: string): BazowaTabela {
         return this.tabele[tableName];
@@ -233,7 +268,8 @@ class DataBase {
         this.tabele = {
             klienci: new Klienci(),
             typySubskrypcji: new TypySubskrypcji(),
-            subskrypcje: new Subskrypcje()
+            subskrypcje: new Subskrypcje(),
+            upowaznienia: new Uslugi()
         }
         // tworzenie przyladowych danych
         // klienci
@@ -242,9 +278,12 @@ class DataBase {
         const klient3 = new Klient('Mariusz', 'Pudzianiowski');
         const klient4 = new Klient('Robert', 'Burnejka');
         const klient5 = new Klient('Krzysztof', 'Kowalski');
+        // upowaznienia
+        const upowaznienieSilownia = new Usluga('Siłownia');
+        const upowaznienieFitness = new Usluga('Fitness');
         // typy subskrypcji
-        const typSubskrypcji1 = new TypSubskrypcji('Siłownia Miesięczny', 100, 'Siłownia', 30, 100);
-        const typSubskrypcji2 = new TypSubskrypcji('Fitness Miesięczny', 120, 'Fitness', 30, 100);
+        const typSubskrypcji1 = new TypSubskrypcji('Siłownia Miesięczny', 100, upowaznienieSilownia, 30, 100);
+        const typSubskrypcji2 = new TypSubskrypcji('Fitness Miesięczny', 120, upowaznienieFitness, 30, 100);
         // subskrypcje
         const subskrypcja1 = new Subskrypcja(new Date(2020, 1, 1), new Date(2020, 1, 1), 10, 0, 100, klient1, typSubskrypcji1);
         const subskrypcja2 = new Subskrypcja(new Date(2020, 1, 1), new Date(2020, 1, 1), 10, 0, 100, klient2, typSubskrypcji1);
@@ -266,10 +305,14 @@ class DataBase {
         this.tabele.subskrypcje.add(subskrypcja4);
         this.tabele.subskrypcje.add(subskrypcja5);
         this.tabele.subskrypcje.add(subskrypcja6);
+        this.tabele.upowaznienia.add(upowaznienieSilownia);
+        this.tabele.upowaznienia.add(upowaznienieFitness);
     }
 }
 
-export const dataBase = new DataBase();
+ const dataBase = new DataBase();
+
+ export default dataBase;
 // export const dataBase = {
 //     tabele: {
 //         klienci: new Klienci(),

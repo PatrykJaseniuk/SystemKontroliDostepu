@@ -106,6 +106,10 @@ Najważniejsze to przejscie z JS so TS. Znacznie ułatwiło poruszanie się po z
 ### to do:
 Definiować strony i komponenty, tworzyć dla nich api i bazę danych.
 
+***
+## Debugowanie
+Skonfigurowałem debuger w Next.js. i zaczynam dbugowanie. 
+
 
 
 
