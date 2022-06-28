@@ -1,0 +1,52 @@
+// format url
+// https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING
+datasource db {
+  url      = "postgresql://postgres:1234@localhost:5432/system-kontroli-dostepu?schema=public"
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Klient {
+  id       Int      @id @default(autoincrement())
+  //   createdAt DateTime @default(now())
+  imie     String
+  nazwisko String
+  //   role      Role     @default(USER)
+  posts    Karnet[]
+}
+
+model Karnet {
+  id                      Int      @id @default(autoincrement())
+  dataSprzedarzy          DateTime @default(now())
+  dataKoscaAktywnosci     DateTime
+  iloscBazowaWizyt        Int      @default(100)
+  iloscWykozystanychWizyt Int      @default(0)
+
+  //   updatedAt DateTime @updatedAt
+  czyJestUzywany Boolean @default(false)
+  //   title     String   @db.VarChar(255)
+  klient         Klient  @relation(fields: [klientId], references: [id])
+  klientId       Int
+
+  KarnetTyp   KarnetTyp @relation(fields: [karnetTypId], references: [id])
+  karnetTypId Int
+}
+
+model KarnetTyp {
+  id            Int      @id @default(autoincrement())
+  nazwa         String
+  okresWaznosci Int
+  iloscWizyt    Int
+  cena          Float
+  karnety       Karnet[]
+  uslugi        Usluga[]
+}
+
+model Usluga {
+  id           Int         @id @default(autoincrement())
+  nazwa        String
+  typyKarnetow KarnetTyp[]
+}

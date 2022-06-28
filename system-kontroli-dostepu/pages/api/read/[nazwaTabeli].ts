@@ -1,31 +1,25 @@
 import { Argument, Result } from '../../../APICaller&Interface/read';
-import { query, Tabela } from '../../../database/db'
-import getDatabase from '../../../database/db';
+// import { query, Tabela } from '../../../database/db'
+// import getDatabase from '../../../database/db';
 // const getDatabase = require('../../../database/db');
+// import prisma client 
+import { PrismaClient } from '@prisma/client'
+const prisma = new PrismaClient()
 
-// const URL = '/api/read';
-// const URLKlienci = '/klienci';
 
-// export interface TabelaProsta {
-//     columns: Tabela['columns'];
-//     rows: {
-//         id: number;
-//         komorki: {};
-//     }[]
-// }
-
-export default function handler(req, res) {
+export default async function handler(req, res) {
     const { nazwaTabeli } = req.query
-    const tabela = getDatabase().getTabele(nazwaTabeli);
+    // const tabela = getDatabase().getTabele(nazwaTabeli);
 
-
-    let filteredAndSorted  = tabela.getFilteredAndSorted(req.body as Argument);
+    let klienci = await prisma.klient.findMany();
+    console.log(klienci);
+    // let filteredAndSorted = tabela.getFilteredAndSorted(req.body as Argument);
     // remove powiazane encje from filteredAndSorted
-    let rows = filteredAndSorted.rows.map(row => {
-        return { id: row.id, komorki: row.komorki }
-    })
+    // let rows = filteredAndSorted.rows.map(row => {
+    // return { id: row.id, komorki: row.komorki }
+    // })
 
-    let tabelaProsta: Result = { columns: tabela.columns, rows }
+    let tabelaProsta: Result = { columns: [], rows: [] }
     res.status(200).json(tabelaProsta);
 }
 

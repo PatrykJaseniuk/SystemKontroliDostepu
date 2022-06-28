@@ -135,3 +135,39 @@ obj.country = 'Chile';
 ```
 
 Rozdzieliłem kazdy z plikow API na część wykonywaną przez klienta i czesc wykonywana przez serwer.
+***
+## 6 Baza danych
+Postanowilem kozystac ze zwyklej bazy danych.
+### to do:
+* Polaczyc sie z baza PostgreSQL.
+* Stworzyc migracje(zdefiniowac dane)
+* ORM i uzyskiwanie danych przez API.
+
+Kozystam z Prisma, czyli moduly który rozwiazuje wszystkie powyzsze zadania. 
+https://www.prisma.io/docs/concepts/overview/what-is-prisma
+
+Stworzylem plik Prisma schema, w ktorym sa zdefiniowane::
+* polaczenie z baza (Data source)
+* generator klienta ???
+* model danych (Data model definition)
+
+Stworzylem baze danych za pomoca PGAdmin o nazwie `system-kontroli-dostepu`.
+
+instaluje prisme komeda:
+```bash
+npm install @prisma/client
+```
+
+dokonalem testowej migracji:
+```bash
+npx prisma migrate dev --name init
+```
+w dokumentacji podali ta komede bez `npx` na poczatku, ale to nie dziala.
+Kiedy mozna uzyc tej komendy bez `npx`?
+
+Tworze klienta na podstawie schemy:
+```bash
+npx prisma generate
+```
+udalo sie uzyskać dane w api.
+

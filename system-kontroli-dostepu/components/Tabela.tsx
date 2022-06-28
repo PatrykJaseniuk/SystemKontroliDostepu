@@ -23,7 +23,7 @@ export default function Tabela(prop: Properties) {
     var [error, setError] = React.useState(null);
     useEffect(() => {
         prop.getFileteredAndSorted(query)
-            .then(tabela => { setTabela(tabela);})
+            .then(tabela => { setTabela(tabela); })
             .catch(error => setError(error))
     }, [query])
 
