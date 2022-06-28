@@ -1,16 +1,18 @@
-import { useEffect, useState } from "react";
-import { getKlienciWUslugach, Result, } from "../pages/api/klient/klienciWUslugach";
-import { TabelaProsta } from "../pages/api/read/[nazwaTabeli]";
+//API
+import { getKlienciWUslugach, Result } from "../APICaller&Interface/klient/getKlienciWUslugach";
+import { Result as TabelaProsta } from "../APICaller&Interface/read";
+// Components
 import Tabela from "./Tabela";
-
+// hooks
+import { useEffect, useState } from "react";
 
 
 export default function KlienciWUslugach({ odswierzanie }) {
     var [klienciWUslugach, setKlienciWUslugach] = useState<Result>(null);
     useEffect(() => {
         getKlienciWUslugach()
-            .then(data => { setKlienciWUslugach(data); console.log('getKlienciWUslugach: ', data) }).
-            catch(error => { console.log('getKlienciWUslugach: ', error) });
+            .then(data => { setKlienciWUslugach(data) })
+            .catch(error => { console.log('getKlienciWUslugach: ', error) });
     }, [odswierzanie])
 
     if (!klienciWUslugach) return null;

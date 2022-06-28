@@ -1,9 +1,11 @@
-// import
+// API
+import { Argument as query, Result as tab } from '../APICaller&Interface/read';
+import { } from '../APICaller&Interface/read';
+//Components
 import Link from 'next/link';
+// hooks
 import React, { useEffect } from 'react';
-import styles from '../styles/Home.module.css'
-import { query } from '../database/db';
-import {TabelaProsta as tab} from '../pages/api/read/[nazwaTabeli]'
+
 
 interface Properties {
     getFileteredAndSorted: (query: query) => Promise<tab>;
@@ -21,16 +23,15 @@ export default function Tabela(prop: Properties) {
     var [error, setError] = React.useState(null);
     useEffect(() => {
         prop.getFileteredAndSorted(query)
-            .then(tabela => { setTabela(tabela); console.log(tabela) })
+            .then(tabela => { setTabela(tabela);})
             .catch(error => setError(error))
     }, [query])
 
 
     if (error) return <div>Failed to load</div>
     if (!tabela) return <div>Loading...</div>
-    // console.log(data)
     return (
-        <div className={styles.container}>
+        <div className="container">
             <div className="card  mb-3" >
                 <table className="table table-striped">
                     <Thead
@@ -148,8 +149,8 @@ function Tbody(prop: TbodyProps) {
                     onClick={() => { prop.onRowClick(row.id) }}
                 >
                     {
-                        Object.entries(row.komorki).map(([key, value]) => {
-                            return <td key={key}>{value}</td>
+                        Object.entries(row.komorki).map(([nazwaKolumny, wartosc]) => {
+                            return <td key={nazwaKolumny}>{wartosc}</td>
                         })
                     }
                     {(() => {

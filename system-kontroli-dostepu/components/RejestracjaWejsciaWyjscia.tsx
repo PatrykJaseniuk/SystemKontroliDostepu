@@ -1,10 +1,14 @@
+// API
+import { getKlienci } from '../APICaller&Interface/read';
+import { getUslugiKlienta } from '../APICaller&Interface/klient/getUslugiKlienta';
+import { getCzyKozystaZUslugi } from '../APICaller&Interface/klient/czyKozystaZuslugi';
+import { klientKorzystaZUslugi } from '../APICaller&Interface/klient/klientKorzystaZUslugi';
+import { wypuscKlienta } from '../APICaller&Interface/klient/wypuscKlienta';
+// Components
 import Tabela from './Tabela';
-import { getKlienci } from '../pages/api/read/[nazwaTabeli]';
-import { getUslugiKlienta } from '../pages/api/klient/uslugiKlienta';
-import { getCzyKozystaZUslugi } from '../pages/api/klient/czyKozystaZUslugi';
-import { klientKorzystaZUslugi } from '../pages/api/klient/klientKorzystaZUslugi';
+// hooks
 import { useState, useEffect } from 'react';
-import { wypuscKlienta } from '../pages/api/klient/wypuscKlienta';
+
 // import { getDostepneUslugi } from '../pages/api/read/[nazwaTabeli]';
 
 
@@ -14,6 +18,7 @@ export default function RejestracjaWejsciaWyjscia({ onChange }) {
         onChange();
     }, [selectedKlientId])
     console.log('wybrano klienta', selectedKlientId);
+
     return (
         <div>
             <div className="card bg-primary mb-3">
@@ -46,7 +51,6 @@ export default function RejestracjaWejsciaWyjscia({ onChange }) {
 }
 
 function PrzyciskiWpuszczaniaWypuszczaniaKlienta({ klientId, onCancelClick }) {
-
     var [dostepneUslugi, setDostepneUslugi] = useState(null);
     var [czyKozystaZUslugi, setCzyKozystaZUslugi] = useState(null);
     var [info, setInfo] = useState(null);
@@ -58,7 +62,7 @@ function PrzyciskiWpuszczaniaWypuszczaniaKlienta({ klientId, onCancelClick }) {
 
         getCzyKozystaZUslugi({ idKlienta: klientId })
             .then(data => { setCzyKozystaZUslugi(data.czyKozystaZUslugi); console.log('getCzyKozystaZUslugi: ', data.czyKozystaZUslugi) });
-    }, [])
+    }, [klientId])
 
 
 

@@ -110,7 +110,28 @@ Definiować strony i komponenty, tworzyć dla nich api i bazę danych.
 ## Debugowanie
 Skonfigurowałem debuger w Next.js. i zaczynam dbugowanie. 
 
+***
+## Debugowanie
+Dlaczego api KlienciWUslugach jeset wywolwana 3 razy?
+Pojawił się problem: kiedy importuje jakiś element z pliku to do klienta jest wysyłany cały ten plik i import nasępuje dopiero po stronie klienta.
+Dlatego do stron moge importować tylko pliki ktore zawieraja tylko elementy uzywane przez klienta, a nie jak teraz że plik w czesci się składa z funkcji ktore maja sie wykonac po stronie servera a czesc po stronie klienta.
 
+w ts można zdefiniować obiekt z dynamicznym indeksem:
+https://bobbyhadz.com/blog/typescript-object-with-dynamic-keys
 
+```ts
+interface Person {
+  
+  [key: string]: string | number;
+}
 
+const obj: Person = {
+  name: 'Tom',
+};
 
+obj.age = 30;
+
+obj.country = 'Chile';
+```
+
+Rozdzieliłem kazdy z plikow API na część wykonywaną przez klienta i czesc wykonywana przez serwer.

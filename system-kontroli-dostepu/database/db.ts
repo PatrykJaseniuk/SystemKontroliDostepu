@@ -1,16 +1,6 @@
-// class BazowaEncja {
-//     id: number;
-//     cells: {};
-//     powiazaneEncje: {};
-// }
+import fs from 'fs';
+import { decycle, retrocycle } from './Circular'
 
-// interface Query {
-//     filter?: {};
-//     sort?: {
-//         direction: 'asc' | 'desc' | 'none';
-//         column: string;
-//     };
-// }
 interface Encja {
     id: number;
     komorki: {}
@@ -36,6 +26,11 @@ export interface query {
 class BazowaTabela implements Tabela {
     columns: { nazwaKolumny: string, typ: TypPola }[];
     rows: Encja[];
+
+    fill(data: Tabela): void {
+        this.columns = data.columns;
+        this.rows = data.rows;
+    }
     getFilteredAndSorted(query: query): Tabela {
         console.log(query)
         // filter by query params
@@ -265,54 +260,84 @@ class DataBase {
     }
 
     constructor() {
+        console.log('-----------------------------------------DataBase constructor-----------------------------------------');
         this.tabele = {
             klienci: new Klienci(),
             typySubskrypcji: new TypySubskrypcji(),
             subskrypcje: new Subskrypcje(),
             upowaznienia: new Uslugi()
         }
-        // tworzenie przyladowych danych
-        // klienci
-        const klient1 = new Klient('Jan', 'Kowalski');
-        const klient2 = new Klient('Zbigniew', 'Nowak');
-        const klient3 = new Klient('Mariusz', 'Pudzianiowski');
-        const klient4 = new Klient('Robert', 'Burnejka');
-        const klient5 = new Klient('Krzysztof', 'Kowalski');
-        // upowaznienia
-        const upowaznienieSilownia = new Usluga('Siłownia');
-        const upowaznienieFitness = new Usluga('Fitness');
-        // typy subskrypcji
-        const typSubskrypcji1 = new TypSubskrypcji('Siłownia Miesięczny', 100, upowaznienieSilownia, 30, 100);
-        const typSubskrypcji2 = new TypSubskrypcji('Fitness Miesięczny', 120, upowaznienieFitness, 30, 100);
-        // subskrypcje
-        const subskrypcja1 = new Subskrypcja(new Date(2020, 1, 1), new Date(2020, 1, 1), 10, 0, 100, klient1, typSubskrypcji1);
-        const subskrypcja2 = new Subskrypcja(new Date(2020, 1, 1), new Date(2020, 1, 1), 10, 0, 100, klient2, typSubskrypcji1);
-        const subskrypcja3 = new Subskrypcja(new Date(2020, 1, 1), new Date(2020, 1, 1), 10, 0, 100, klient3, typSubskrypcji2);
-        const subskrypcja4 = new Subskrypcja(new Date(2020, 1, 1), new Date(2020, 1, 1), 10, 0, 100, klient4, typSubskrypcji2);
-        const subskrypcja5 = new Subskrypcja(new Date(2020, 1, 1), new Date(2020, 1, 1), 10, 0, 100, klient5, typSubskrypcji2);
-        const subskrypcja6 = new Subskrypcja(new Date(2020, 1, 1), new Date(2020, 1, 1), 10, 0, 100, klient1, typSubskrypcji2);
-        // dodawanie do tabel
-        this.tabele.klienci.add(klient1);
-        this.tabele.klienci.add(klient2);
-        this.tabele.klienci.add(klient3);
-        this.tabele.klienci.add(klient4);
-        this.tabele.klienci.add(klient5);
-        this.tabele.typySubskrypcji.add(typSubskrypcji1);
-        this.tabele.typySubskrypcji.add(typSubskrypcji2);
-        this.tabele.subskrypcje.add(subskrypcja1);
-        this.tabele.subskrypcje.add(subskrypcja2);
-        this.tabele.subskrypcje.add(subskrypcja3);
-        this.tabele.subskrypcje.add(subskrypcja4);
-        this.tabele.subskrypcje.add(subskrypcja5);
-        this.tabele.subskrypcje.add(subskrypcja6);
-        this.tabele.upowaznienia.add(upowaznienieSilownia);
-        this.tabele.upowaznienia.add(upowaznienieFitness);
+
+        const json = fs.readFileSync('database.json', 'utf8');
+        const tabele = decycle(JSON.parse(json));
+
+        if (tabele != undefined) {
+            // for every key in tabele
+            for (const key in this.tabele) {
+                this.tabele[key].fill(tabele[key]);
+            }
+        }
+        else {
+
+
+            // tworzenie przyladowych danych
+            // klienci
+            const klient1 = new Klient('Jan', 'Kowalski');
+            const klient2 = new Klient('Zbigniew', 'Nowak');
+            const klient3 = new Klient('Mariusz', 'Pudzianiowski');
+            const klient4 = new Klient('Robert', 'Burnejka');
+            const klient5 = new Klient('Krzysztof', 'Kowalski');
+            // upowaznienia
+            const upowaznienieSilownia = new Usluga('Siłownia');
+            const upowaznienieFitness = new Usluga('Fitness');
+            // typy subskrypcji
+            const typSubskrypcji1 = new TypSubskrypcji('Siłownia Miesięczny', 100, upowaznienieSilownia, 30, 100);
+            const typSubskrypcji2 = new TypSubskrypcji('Fitness Miesięczny', 120, upowaznienieFitness, 30, 100);
+            // subskrypcje
+            const subskrypcja1 = new Subskrypcja(new Date(2020, 1, 1), new Date(2020, 1, 1), 10, 0, 100, klient1, typSubskrypcji1);
+            const subskrypcja2 = new Subskrypcja(new Date(2020, 1, 1), new Date(2020, 1, 1), 10, 0, 100, klient2, typSubskrypcji1);
+            const subskrypcja3 = new Subskrypcja(new Date(2020, 1, 1), new Date(2020, 1, 1), 10, 0, 100, klient3, typSubskrypcji2);
+            const subskrypcja4 = new Subskrypcja(new Date(2020, 1, 1), new Date(2020, 1, 1), 10, 0, 100, klient4, typSubskrypcji2);
+            const subskrypcja5 = new Subskrypcja(new Date(2020, 1, 1), new Date(2020, 1, 1), 10, 0, 100, klient5, typSubskrypcji2);
+            const subskrypcja6 = new Subskrypcja(new Date(2020, 1, 1), new Date(2020, 1, 1), 10, 0, 100, klient1, typSubskrypcji2);
+            // dodawanie do tabel
+            this.tabele.klienci.add(klient1);
+            this.tabele.klienci.add(klient2);
+            this.tabele.klienci.add(klient3);
+            this.tabele.klienci.add(klient4);
+            this.tabele.klienci.add(klient5);
+            this.tabele.typySubskrypcji.add(typSubskrypcji1);
+            this.tabele.typySubskrypcji.add(typSubskrypcji2);
+            this.tabele.subskrypcje.add(subskrypcja1);
+            this.tabele.subskrypcje.add(subskrypcja2);
+            this.tabele.subskrypcje.add(subskrypcja3);
+            this.tabele.subskrypcje.add(subskrypcja4);
+            this.tabele.subskrypcje.add(subskrypcja5);
+            this.tabele.subskrypcje.add(subskrypcja6);
+            this.tabele.upowaznienia.add(upowaznienieSilownia);
+            this.tabele.upowaznienia.add(upowaznienieFitness);
+        }
+        //    every 5 seconds call method save
+        setInterval(() => {
+            this.save();
+        }
+            , 5000);
+    }
+
+    save() {
+        console.log('saving database...');
+        const json = JSON.stringify(decycle(this.tabele));
+        fs.writeFileSync('database.json', json);
     }
 }
 
- const dataBase = new DataBase();
+const dataBase = new DataBase();
 
- export default dataBase;
+// export default new Database();
+
+export default function getDatabase() {
+    return dataBase;
+}
 // export const dataBase = {
 //     tabele: {
 //         klienci: new Klienci(),
