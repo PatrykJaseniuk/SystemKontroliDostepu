@@ -10,12 +10,11 @@ generator client {
 }
 
 model Klient {
-  id       Int      @id @default(autoincrement())
-  //   createdAt DateTime @default(now())
+  id       Int    @id @default(autoincrement())
   imie     String
   nazwisko String
-  //   role      Role     @default(USER)
-  posts    Karnet[]
+
+  karnety Karnet[]
 }
 
 model Karnet {
@@ -24,29 +23,28 @@ model Karnet {
   dataKoscaAktywnosci     DateTime
   iloscBazowaWizyt        Int      @default(100)
   iloscWykozystanychWizyt Int      @default(0)
+  czyJestUzywany          Boolean  @default(false)
 
-  //   updatedAt DateTime @updatedAt
-  czyJestUzywany Boolean @default(false)
-  //   title     String   @db.VarChar(255)
-  klient         Klient  @relation(fields: [klientId], references: [id])
-  klientId       Int
-
+  klient      Klient    @relation(fields: [klientId], references: [id])
+  klientId    Int
   KarnetTyp   KarnetTyp @relation(fields: [karnetTypId], references: [id])
   karnetTypId Int
 }
 
 model KarnetTyp {
-  id            Int      @id @default(autoincrement())
+  id            Int    @id @default(autoincrement())
   nazwa         String
   okresWaznosci Int
   iloscWizyt    Int
   cena          Float
-  karnety       Karnet[]
-  uslugi        Usluga[]
+
+  karnety Karnet[]
+  uslugi  Usluga[]
 }
 
 model Usluga {
-  id           Int         @id @default(autoincrement())
-  nazwa        String
+  id    Int    @id @default(autoincrement())
+  nazwa String
+
   typyKarnetow KarnetTyp[]
 }

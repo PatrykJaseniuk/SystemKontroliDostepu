@@ -26,9 +26,9 @@ export interface Argument {
 }
 
 const URL = '/api/read';
-const URLKlienci = '/klienci';
+const URLKlient = '/klient';
 
-async function getData(url: string, argument: Argument) {
+async function getData(url: string, argument: Argument): Promise<Result> {
     // Default options are marked with *
     const response = await fetch(url, {
         method: 'POST', // *GET, POST, PUT, DELETE, etc.
@@ -47,6 +47,12 @@ async function getData(url: string, argument: Argument) {
 }
 
 export async function getKlienci(argument: Argument): Promise<Result> {
-    var url = URL + URLKlienci;
-    return getData(url, argument);
+    var url = URL + URLKlient;
+    let data = await getData(url, argument);
+    // dataje kolumny
+    data.columns = [
+        { nazwaKolumny: 'imie', typ: 'text' },
+        { nazwaKolumny: 'nazwisko', typ: 'text' },
+    ];
+    return data;
 }

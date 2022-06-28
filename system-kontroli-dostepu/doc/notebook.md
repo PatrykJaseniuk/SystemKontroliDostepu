@@ -171,3 +171,5 @@ npx prisma generate
 ```
 udalo sie uzyskać dane w api.
 
+Przerobiłem api tak że korzysta z Prisma.
+

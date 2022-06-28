@@ -7,7 +7,7 @@ export interface Result {
 }
 
 export interface Usluga {
-    id: number,
+    idKarnetu: number,
     nazwa: string,
 }
 

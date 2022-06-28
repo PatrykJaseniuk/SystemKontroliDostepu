@@ -1,58 +1,67 @@
-import { Argument,Result,Usluga } from '../../../APICaller&Interface/klient/getKlienciWUslugach';
+import { Argument, Result, Usluga } from '../../../APICaller&Interface/klient/getKlienciWUslugach';
+import { prisma } from '../../../prisma/prismaClient';
 
-import getDataBase from '../../../database/db'
-
-
-
-// interface Argument {
-// }
-
-// interface Usluga {
-//     nazwa: string,
-//     tabela: TabelaProsta
-// }
-
-// export interface Result {
-//     uslugi: Usluga[]
-// }
-
-// const URL = '/api/klient/klienciWUslugach';
-
-
-var subskrypcje = getDataBase().tabele.subskrypcje;
-var upowaznia = getDataBase().tabele.upowaznienia;
-var klienci = getDataBase().tabele.klienci;
-
-export default function handler(req, res) {
+export default async function handler(req, res) {
     console.log('---------------klienci w uslugach---->');
     console.log('query: ', req.query);
     console.log('body: ', req.body);
 
-    let result: Result ={} as Result;
+    let result: Result = { uslugi: [] };
+    // let argument: Argument = req.body;
 
-    result.uslugi = upowaznia.rows.map(upowaznienie => {
-        let usluga: Usluga = {
-            nazwa: upowaznienie.komorki.nazwa,
-            tabela: {
-                columns: subskrypcje.columns,
-                rows: subskrypcje.rows.map(subskrypcja => {
-                    console.log(subskrypcja.powiazaneEncje.klient.komorki.imie, ' czyJestUzywana:', subskrypcja.komorki.czyJestUzywana)
-                    if (subskrypcja.komorki.czyJestUzywana == true) {
-                        return { id: subskrypcja.id, komorki: subskrypcja.komorki }
+
+    let uslugi = await prisma.usluga.findMany();
+
+    // for ewery usluga find klients with karnet in use
+    for await (const usluga of uslugi) {
+        let klienci = await prisma.klient.findMany({
+            where: {
+                karnety: {
+
+                    some: {
+                        czyJestUzywany: true,
+                        KarnetTyp: {
+                            uslugi: {
+                                some: {
+                                    id: usluga.id
+                                }
+                            }
+                        }
                     }
-                    else {
-                        return { id: subskrypcja.id, komorki: { nic: 'nic' } }
-                    }
-                })
+                }
             }
+        })
+
+        let tabela: Usluga['tabela'] = {
+            columns: [{ nazwaKolumny: 'imie', typ: 'text' }, { nazwaKolumny: 'nazwisko', typ: 'text' }],
+            rows: klienci.map(klient => {
+                let id = klient.id;
+                delete klient['id']
+                return { id: id, komorki: klient }
+            })
         }
-        return usluga;
-    })
+        result.uslugi.push({ nazwa: usluga.nazwa, tabela: tabela })
+    }
 
     console.log('result: ', result);
     console.log('<----klienci w uslugach---------------');
-    res.status(200).json(result);    
+    res.status(200).json(result);
 }
-
-
-
+ // result.uslugi = upowaznia.rows.map(upowaznienie => {
+    //     let usluga: Usluga = {
+    //         nazwa: upowaznienie.komorki.nazwa,
+    //         tabela: {
+    //             columns: subskrypcje.columns,
+    //             rows: subskrypcje.rows.map(subskrypcja => {
+    //                 console.log(subskrypcja.powiazaneEncje.klient.komorki.imie, ' czyJestUzywana:', subskrypcja.komorki.czyJestUzywana)
+    //                 if (subskrypcja.komorki.czyJestUzywana == true) {
+    //                     return { id: subskrypcja.id, komorki: subskrypcja.komorki }
+    //                 }
+    //                 else {
+    //                     return { id: subskrypcja.id, komorki: { nic: 'nic' } }
+    //                 }
+    //             })
+    //         }
+    //     }
+    //     return usluga;
+    // })

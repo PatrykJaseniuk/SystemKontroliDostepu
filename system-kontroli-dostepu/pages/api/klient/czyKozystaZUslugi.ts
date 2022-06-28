@@ -1,24 +1,26 @@
 
-import getDataBase from '../../../database/db'
-import { Argument, Result} from '../../../APICaller&Interface/klient/czyKozystaZuslugi'
+import { Argument, Result } from '../../../APICaller&Interface/klient/czyKozystaZuslugi'
+import { prisma } from '../../../prisma/prismaClient';
 
 
-
-var klienci = getDataBase().tabele.klienci;
-
-export default function handler(req, res) {
+export default async function handler(req, res) {
     console.log('---------------czy klient kozysta z uslugi---->');
     console.log('query: ', req.query);
     console.log('body: ', req.body);
 
     let argument: Argument = req.body;
-    var klient = klienci.getById(argument.idKlienta)
-    let czyKozystaZUslugi: boolean = false;
-    klient.powiazaneEncje.subskrypcje.forEach(subskrypcja => {
-        czyKozystaZUslugi = czyKozystaZUslugi || subskrypcja.komorki.czyJestUzywana;
+    let result: Result = { czyKozystaZUslugi: false };
+    let uzywanyKarnet = await prisma.karnet.findFirst({
+        where: {
+            klientId: argument.idKlienta,
+            czyJestUzywany: true
+        }
     })
-
-    let result: Result = { czyKozystaZUslugi: czyKozystaZUslugi };
+    if (uzywanyKarnet) {
+        result = {
+            czyKozystaZUslugi: true
+        }
+    }
 
     res.status(200).json(result);
     console.log('result: ', result);

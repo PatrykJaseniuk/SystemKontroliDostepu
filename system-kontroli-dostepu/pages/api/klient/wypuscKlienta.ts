@@ -1,26 +1,29 @@
 import { Argument, Result } from '../../../APICaller&Interface/klient/wypuscKlienta';
-import  getDataBase  from '../../../database/db'
-// const getDatabase = require('../.././../database/db');
-// todo:
+import { prisma } from '../../../prisma/prismaClient';
 
-var klienci = getDataBase().tabele.klienci;
-
-export default function handler(req, res) {
+export default async function handler(req, res) {
     console.log('---------------wypuszczenie klienta---->');
     console.log('query: ', req.query);
     console.log('body: ', req.body);
 
-    let czyWypuszczono = false;
+
     let argument: Argument = req.body as Argument;
-    var klient = klienci.getById(argument.idKlienta)
-    klient.powiazaneEncje.subskrypcje.forEach(subskrypcja => {
-        if (subskrypcja.komorki.czyJestUzywana === true) {
-            subskrypcja.komorki.czyJestUzywana = false;
-            czyWypuszczono = true;
+    let result: Result = { czyWypuszczono: false };
+    argument.idKlienta
+    //    set czyJestUzywany to false for karnet with klientId = argument.idKlienta
+    let updateResult = await prisma.karnet.updateMany({
+        where: {
+            klientId: argument.idKlienta
+        },
+        data: {
+            czyJestUzywany: false
         }
     })
-
-    let result: Result = { czyWypuszczono: czyWypuszczono };
+    if (updateResult.count > 0) {
+        result = {
+            czyWypuszczono: true
+        }
+    }
 
     res.status(200).json(result);
     console.log('result: ', result);

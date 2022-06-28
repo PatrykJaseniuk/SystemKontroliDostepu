@@ -3,24 +3,69 @@ import { Argument, Result } from '../../../APICaller&Interface/read';
 // import getDatabase from '../../../database/db';
 // const getDatabase = require('../../../database/db');
 // import prisma client 
-import { PrismaClient } from '@prisma/client'
-const prisma = new PrismaClient()
+import { prisma } from '../../../prisma/prismaClient';
 
 
 export default async function handler(req, res) {
+    console.log('---------------tabele read---->');
+    console.log('query: ', req.query);
+    console.log('body: ', req.body);
+
+
     const { nazwaTabeli } = req.query
     // const tabela = getDatabase().getTabele(nazwaTabeli);
 
-    let klienci = await prisma.klient.findMany();
-    console.log(klienci);
+    let argument: Argument = req.body;
+    let orderBy:Argument['sort']| {};
+    if(argument.sort.direction!="none"){
+        orderBy = {
+            [argument.sort.column]: argument.sort.direction
+        }
+    }
+    else{
+        orderBy={};
+    }
+    
+
+    let tabela = await prisma[nazwaTabeli].findMany({
+        where: {
+            AND: Object.entries(argument.filter).map(([nazwaKolumny, szukanaWartosc]) => {
+                return {
+                    [nazwaKolumny]: { contains: szukanaWartosc }
+                }
+            })
+
+        },
+        orderBy: orderBy
+    }
+    );
+
+    // prisma.klient.findMany({
+    //     where: {
+    //         imie: { contains: argument.filter.imie }
+    //     },
+    //     orderBy: {
+    //         imie: ''
+    //     }
+    // })
+    // console.log(tabela);
     // let filteredAndSorted = tabela.getFilteredAndSorted(req.body as Argument);
     // remove powiazane encje from filteredAndSorted
     // let rows = filteredAndSorted.rows.map(row => {
     // return { id: row.id, komorki: row.komorki }
     // })
 
-    let tabelaProsta: Result = { columns: [], rows: [] }
-    res.status(200).json(tabelaProsta);
+    // bugogenne rozwiazanie
+    let result: Result = {
+        columns: [], rows: tabela.map(row => {
+            let id = row.id;
+            delete row['id'];
+            return { id: id, komorki: row }
+        })
+    }
+    res.status(200).json(result);
+    console.log('result: ', result);
+    console.log('<----tabela read---------------');
 }
 
 // async function getData(url: string, query: query) {

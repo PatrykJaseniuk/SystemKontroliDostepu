@@ -1,75 +1,47 @@
 import { Argument, Result, Usluga } from '../../../APICaller&Interface/klient/getUslugiKlienta';
-import getDataBase from '../../../database/db'
-// const getDataBase = require('../../../database/db');
-// interface Argument {
-//     idKlienta: number
-// }
-
-// interface Result {
-//     uslugiKlienta: Array<Usluga>
-// }
-
-// interface Usluga {
-//     id: number,
-//     nazwa: string,
-// }
-
-// const URL = '/api/klient/uslugiKlienta';
-var klienci = getDataBase().tabele.klienci
+import { prisma } from '../../../prisma/prismaClient';
 
 
 
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
     console.log('---------------uslugi klienta---->');
     console.log('query: ', req.query);
     console.log('body: ', req.body);
     console.log('id: ', req.body.idKlienta);
 
-    const argument :Argument = req.body ;
+    const argument: Argument = req.body;
 
-    var klient = klienci.getById(argument.idKlienta);
-    console.log('klient: ', klient);
+    let karnety = await prisma.karnet.findMany({
+        where: {
+            klientId: argument.idKlienta
+        }
+    });
 
-    let uslugiKlienta = klient.powiazaneEncje.subskrypcje.map(subskrypcja => {
-        let usluga: Usluga = { id: subskrypcja.id, nazwa: subskrypcja.powiazaneEncje.typSubskrypcji.powiazaneEncje.usluga.komorki.nazwa }
-        return usluga;
+    let uslugiKlienta: Usluga[] = [];
+
+    for await (const karnet of karnety) {
+        let uslugi = await prisma.usluga.findMany({
+            where: {
+                typyKarnetow: {
+                    some: {
+                        karnety: {
+                            some: {
+                                id: karnet.id
+                            }
+                        }
+                    }
+                }
+            }
+        })
+
+        uslugi.forEach(usluga => {
+            uslugiKlienta.push({ idKarnetu: karnet.id, nazwa: usluga.nazwa })
+        })
     }
-    )
-    let result: Result = {
-        uslugiKlienta: uslugiKlienta
-    }
-    // = klient.powiazaneEncje.subskrypcje.map(subskrypcja => {
-    //     console.log(subskrypcja.usluga.nazwa)
-    //     let uslugaKlienta: Usluga = {
-    //         id: subskrypcja.powiazaneEncje.typySubskrypcji[0].id,
-    //         nazwa: subskrypcja.powiazaneEncje.typySubskrypcji[0].upowaznienie
-    //     }
-    //     return uslugaKlienta
-    // }
-    // )
 
+    let result: Result = { uslugiKlienta: uslugiKlienta };
     res.status(200).json(result);
     console.log('result: ', result);
     console.log('<----uslugi klienta---------------');
 }
-
-// export async function getUslugiKlienta(argument: Argument): Promise<Result> {
-
-//     // Default options are marked with *
-//     const response = await fetch(URL, {
-//         method: 'POST', // *GET, POST, PUT, DELETE, etc.
-//         mode: 'cors', // no-cors, *cors, same-origin
-//         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-//         credentials: 'same-origin', // include, *same-origin, omit
-//         headers: {
-//             'Content-Type': 'application/json'
-//             // 'Content-Type': 'application/x-www-form-urlencoded',
-//         },
-//         redirect: 'follow', // manual, *follow, error
-//         referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-//         body: JSON.stringify(argument) // body data type must match "Content-Type" header
-//     });
-//     return response.json(); // parses JSON response into native JavaScript objects
-// }
-

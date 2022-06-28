@@ -1,6 +1,5 @@
 export interface Argument {
-    idKlienta: number
-    idUslugi: number
+    idKarnetu: number;
 }
 
 export interface Result {

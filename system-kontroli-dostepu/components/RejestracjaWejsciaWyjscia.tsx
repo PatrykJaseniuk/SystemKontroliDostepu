@@ -1,6 +1,6 @@
 // API
 import { getKlienci } from '../APICaller&Interface/read';
-import { getUslugiKlienta } from '../APICaller&Interface/klient/getUslugiKlienta';
+import { getUslugiKlienta, Result as UslugiKlienta } from '../APICaller&Interface/klient/getUslugiKlienta';
 import { getCzyKozystaZUslugi } from '../APICaller&Interface/klient/czyKozystaZuslugi';
 import { klientKorzystaZUslugi } from '../APICaller&Interface/klient/klientKorzystaZUslugi';
 import { wypuscKlienta } from '../APICaller&Interface/klient/wypuscKlienta';
@@ -51,13 +51,13 @@ export default function RejestracjaWejsciaWyjscia({ onChange }) {
 }
 
 function PrzyciskiWpuszczaniaWypuszczaniaKlienta({ klientId, onCancelClick }) {
-    var [dostepneUslugi, setDostepneUslugi] = useState(null);
+    var [dostepneUslugi, setDostepneUslugi] = useState<UslugiKlienta>(null);
     var [czyKozystaZUslugi, setCzyKozystaZUslugi] = useState(null);
     var [info, setInfo] = useState(null);
 
     useEffect(() => {
         getUslugiKlienta({ idKlienta: klientId })
-            .then(data => { setDostepneUslugi(data.uslugiKlienta); console.log('getUslugiKlienta: ', data) }).
+            .then(data => { setDostepneUslugi(data); console.log('getUslugiKlienta: ', data) }).
             catch(error => { console.log('getUslugiKlienta: ', error) });
 
         getCzyKozystaZUslugi({ idKlienta: klientId })
@@ -97,12 +97,12 @@ function PrzyciskiWpuszczaniaWypuszczaniaKlienta({ klientId, onCancelClick }) {
                     )
                 }
                 else {
-                    return dostepneUslugi.map((usluga, index) => (
+                    return dostepneUslugi.uslugiKlienta.map((usluga, index) => (
                         <button
                             type="button"
                             className="btn btn-primary"
                             onClick={() => {
-                                klientKorzystaZUslugi({ idKlienta: klientId, idUslugi: usluga.id })
+                                klientKorzystaZUslugi({ idKarnetu: usluga.idKarnetu })
                                     .then((data) => {
                                         console.log('klientKorzystaZUslugi: ', data);
                                         setInfo(data)
